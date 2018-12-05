@@ -1,0 +1,97 @@
+<config xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+  <template>
+    <name>report_tem</name>
+    <config>
+      <vlan xmlns="http://tail-f.com/ned/cisco-ios-xr">
+        <vlan-list>
+          <id>100</id>
+          <name>accounting</name>
+        </vlan-list>
+      </vlan>
+      <vlan xmlns="urn:ios">
+        <vlan-list>
+          <id>100</id>
+          <name>sales</name>
+        </vlan-list>
+      </vlan>
+    </config>
+  </template>
+  <template>
+    <name>xr-template</name>
+    <config>
+      <tftp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+        <vrf>
+          <name>default</name>
+          <tftp-server-list tags=" delete ">
+            <af>ipv4</af>
+          </tftp-server-list>
+          <tftp-server-list tags=" delete ">
+            <af>ipv6</af>
+          </tftp-server-list>
+        </vrf>
+      </tftp>
+      <line xmlns="http://tail-f.com/ned/cisco-ios-xr">
+        <default>
+          <transport>
+            <input>ssh</input>
+          </transport>
+        </default>
+        <template>
+          <name>vty5</name>
+          <access-class>
+            <ingress>vty5-permit</ingress>
+          </access-class>
+          <password>
+            <encryption>7</encryption>
+            <password>0822455D0A16544541</password>
+          </password>
+        </template>
+      </line>
+      <vty-pool xmlns="http://tail-f.com/ned/cisco-ios-xr">
+        <pool-name-list>
+          <pool-name>vty5</pool-name>
+          <first-vty>5</first-vty>
+          <last-vty>6</last-vty>
+          <line-template>vty5</line-template>
+        </pool-name-list>
+      </vty-pool>
+      <ipv4 xmlns="http://tail-f.com/ned/cisco-ios-xr">
+        <access-list>
+          <named-acl>
+            <name>vty5-permit</name>
+            <rule>
+              <id>10</id>
+              <line>permit ipv4 host 10.10.10.10 any</line>
+            </rule>
+            <rule>
+              <id>20</id>
+              <line>deny ipv4 any any</line>
+            </rule>
+          </named-acl>
+        </access-list>
+        <virtual>
+          <address>
+            <use-as-src-addr/>
+          </address>
+        </virtual>
+      </ipv4>
+      <dhcp xmlns="http://tail-f.com/ned/cisco-ios-xr">
+        <ipv4 tags=" delete ">
+        </ipv4>
+        <ipv6 tags=" delete ">
+          <interface>
+            <name>1</name>
+          </interface>
+        </ipv6>
+      </dhcp>
+      <ssh xmlns="http://tail-f.com/ned/cisco-ios-xr">
+        <server>
+          <rate-limit>10</rate-limit>
+          <v2/>
+        </server>
+      </ssh>
+    </config>
+  </template>
+  </devices>
+</config>

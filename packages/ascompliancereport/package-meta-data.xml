@@ -1,0 +1,16 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>ascompliancereport</name>
+  <package-version>1.0</package-version>
+  <description>Report compliance issues and provide support to make devices compliant against templates</description>
+  <ncs-min-version>4.6</ncs-min-version>
+
+  <component>
+    <name>GenerateComplianceReportApi</name>
+    <callback>
+      <java-class-name>com.cisco.as.reusable.actions.ascompliancereports.GenerateComplianceReportApi</java-class-name>
+    </callback>
+  </component>
+
+
+
+</ncs-package>

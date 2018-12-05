@@ -1,0 +1,121 @@
+module ascompliancereport {
+  namespace "http://com/cisco/as/reusable/actions/ascompliancereports";
+  prefix ascompliancereport;
+
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  organization "Cisco-AS";
+  contact
+    "as-nso-service-packs@cisco.com";
+  description
+    "compliance report action";
+
+  revision 2018-11-08 {
+    description
+      "First release of compliance report action";
+    reference "First version, ready for testing";
+  }
+
+  //Groupings
+  //Leaves are marked as hidden to make this action simple
+  //leaves can be exposed if requirement arise
+
+  grouping input_nodes {
+    leaf jobname {
+      tailf:info "jobname";
+      type string;
+      tailf:hidden "full";
+      default "compliance-job";
+    }
+    //title which will be shown on report
+    leaf report-title {
+      tailf:info "report title";
+      type string;
+      tailf:hidden "full";
+      default "Compliance Report";
+    }
+    //name of the report as required by NSO built in compliance reporting feature
+    //default value can be modifed as required
+    leaf report-name {
+      tailf:info "report name";
+      type string;
+      tailf:hidden "full";
+      default "compliance-report";
+    }
+    list devices {
+      key "device-name";
+      tailf:info "list of devices";
+      leaf device-name {
+        tailf:info "name of device to be included for compliance reporting";
+        type leafref {
+          path "/ncs:devices/ncs:device/ncs:name";
+        }
+      }
+    }
+    list templates {
+      key "template-name";
+      tailf:info "list of templates";
+      leaf template-name {
+        tailf:info "name of template to be used for reporting";
+        type leafref {
+          path "/ncs:devices/ncs:template/ncs:name";
+        }
+      }
+    }
+    leaf outformat {
+      tailf:info "The format of report output file";
+      tailf:hidden "full";
+      type enumeration {
+        enum "text";
+        enum "xml";
+        enum "html";
+      }
+      default "html";
+    }
+  }
+
+  //leaves which be returned back in response to calling user/application
+
+  grouping output_nodes {
+    leaf jobname {
+      tailf:info "job name";
+      type string;
+    }
+    //User can view newly generated report by using this URL
+    leaf url {
+      tailf:info "url for the report";
+      type string;
+    }
+    leaf error-message {
+      tailf:info "Error Message in case of error/exception";
+      type string;
+    }
+  }
+
+  container compliance-reports {
+    tailf:info "Compliance report generation action";
+    tailf:action "generate-compliance-report" {
+      tailf:actionpoint "generate-compliance-report-action-point";
+      input {
+        uses input_nodes;
+        //if value of this field true, then the template will be applied
+        //toward target devices by making those devices complaint
+        // and then report is generated
+        leaf make-complaint {
+          tailf:info "Make Compliant With the template Configuration";
+          type boolean;
+          default "false";
+        }
+      }
+      output {
+        uses output_nodes;
+      }
+      //output
+    }
+  }
+}
